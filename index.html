@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Chinmay Ram, a horror game designer specializing in Unity 3D level design and immersive experiences.">
+    <meta name="keywords" content="horror games, game design, Unity 3D, level design, Chinmay Ram">
+    <title>Chinmay Ram - Horror Game Designer</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=IM+Fell+English&display=swap');
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background: #1a1a1a;
+            color: #ddd;
+            font-family: 'IM Fell English', serif;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('assets/noise.png') repeat;
+            opacity: 0.1;
+            z-index: -1;
+        }
+
+        .menu-button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 2000;
+            cursor: pointer;
+            font-size: 1.5em;
+            color: #cc5555;
+            background: rgba(15, 15, 15, 0.9);
+            padding: 10px 15px;
+            border: 2px solid #2a2a3a;
+            border-radius: 4px;
+            transition: color 0.3s ease, background 0.3s ease;
+        }
+
+        .menu-button:hover {
+            color: #ff7777;
+            background: rgba(25, 25, 35, 0.9);
+        }
+
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: -250px;
+            width: 250px;
+            height: 100%;
+            background: #0f0f0f;
+            border-right: 2px solid #2a2a3a;
+            z-index: 1500;
+            transition: left 0.3s ease;
+            padding: 4em 1em;
+        }
+
+        .sidebar.open {
+            left: 0;
+        }
+
+        .sidebar a {
+            display: block;
+            color: #ddd;
+            text-decoration: none;
+            font-family: 'Courier New', monospace;
+            font-size: 1.2em;
+            margin: 1em 0;
+            transition: color 0.3s ease, text-shadow 0.3s ease;
+        }
+
+        .sidebar a:hover, .sidebar a.active {
+            color: #cc5555;
+            text-shadow: 0 0 6px rgba(204, 85, 85, 0.5);
+        }
+
+        #home {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            background: #0f0f0f;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        #home::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom, rgba(10, 10, 20, 0.5), rgba(0, 0, 0, 0.8));
+            opacity: 0.6;
+            z-index: -1;
+        }
+
+        #home h1 {
+            font-size: 3em;
+            color: #bb2222;
+            text-shadow: 0 0 8px rgba(187, 34, 34, 0.3);
+            margin: 0.2em 0;
+            animation: subtleFlicker 5s infinite ease-in-out;
+        }
+
+        #home p {
+            font-size: 1.5em;
+            color: #ddd;
+            font-family: 'Courier New', monospace;
+            margin: 0.2em 0;
+        }
+
+        .game-collage {
+            max-width: 800px;
+            width: 100%;
+            margin: 1em 0;
+            border: 2px solid #2a2a3a;
+            border-radius: 6px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+            animation: shiver 0.5s ease-in-out;
+        }
+
+        section {
+            padding: 4em 2em;
+            min-height: 100vh;
+            background: #1a1a1a;
+            display: none;
+        }
+
+        section.active {
+            display: block;
+        }
+
+        .content {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2em;
+            background: rgba(20, 20, 30, 0.95);
+            border: 2px solid #3a3a4a;
+            border-radius: 6px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+        }
+
+        .content h1 {
+            font-size: 2.5em;
+            color: #bb2222;
+            margin-bottom: 0.5em;
+            text-shadow: 0 0 8px rgba(187, 34, 34, 0.3);
+            letter-spacing: 1px;
+        }
+
+        .content p {
+            font-family: 'Courier New', monospace;
+            font-size: 1.1em;
+            color: #ddd;
+            line-height: 1.7;
+            letter-spacing: 0.5px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .game {
+            background: rgba(25, 25, 35, 0.95);
+            border: 2px solid #3a3a4a;
+            border-radius: 8px;
+            margin: 2.5em 0;
+            padding: 2em;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            animation: shiver 0.5s ease-in-out;
+        }
+
+        .game::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, transparent 50%, rgba(0, 0, 0, 0.3) 100%);
+            opacity: 0.5;
+            z-index: -1;
+        }
+
+        .game:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.6);
+        }
+
+        .game h2 {
+            font-size: 1.8em;
+            color: #bb2222;
+            margin-bottom: 0.5em;
+            text-shadow: 0 0 6px rgba(187, 34, 34, 0.2);
+            letter-spacing: 1px;
+        }
+
+        .game p {
+            font-family: 'Courier New', monospace;
+            font-size: 1em;
+            color: #bbb;
+            line-height: 1.6;
+        }
+
+        .game video {
+            width: 100%;
+            max-width: 600px;
+            border-radius: 6px;
+            margin: 1.5em 0;
+            border: 2px solid #2a2a3a;
+            filter: brightness(0.9) contrast(1.1);
+            transition: filter 0.3s ease;
+        }
+
+        .game video:hover {
+            filter: brightness(1) contrast(1.2);
+        }
+
+        .game a {
+            color: #cc5555;
+            text-decoration: none;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            transition: color 0.3s ease;
+        }
+
+        .game a:hover {
+            color: #ff7777;
+            text-shadow: 0 0 6px rgba(255, 119, 119, 0.3);
+        }
+
+        .contact-info {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 2em;
+            background: rgba(20, 20, 30, 0.95);
+            border: 2px solid #3a3a4a;
+            border-radius: 6px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+        }
+
+        .contact-info h2 {
+            font-size: 2em;
+            color: #bb2222;
+            margin-bottom: 0.5em;
+            text-shadow: 0 0 6px rgba(187, 34, 34, 0.2);
+        }
+
+        .contact-info p {
+            font-family: 'Courier New', monospace;
+            font-size: 1em;
+            color: #ddd;
+            margin: 0.5em 0;
+        }
+
+        .contact-info a {
+            color: #cc5555;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .contact-info a:hover {
+            color: #ff7777;
+            text-shadow: 0 0 6px rgba(255, 119, 119, 0.3);
+        }
+
+        #audio-toggle {
+            position: fixed;
+            top: 60px;
+            left: 20px;
+            z-index: 2000;
+            cursor: pointer;
+            font-size: 1em;
+            color: #cc5555;
+            background: rgba(15, 15, 15, 0.9);
+            padding: 8px 12px;
+            border: 2px solid #2a2a3a;
+            border-radius: 4px;
+            transition: color 0.3s ease, background 0.3s ease;
+        }
+
+        #audio-toggle:hover {
+            color: #ff7777;
+            background: rgba(25, 25, 35, 0.9);
+        }
+
+        @keyframes subtleFlicker {
+            0% { opacity: 1; }
+            50% { opacity: 0.95; }
+            100% { opacity: 1; }
+        }
+
+        @keyframes shiver {
+            0% { transform: translate(0, 0); }
+            20% { transform: translate(-2px, 1px); }
+            40% { transform: translate(2px, -1px); }
+            60% { transform: translate(-1px, 1px); }
+            100% { transform: translate(0, 0); }
+        }
+
+        @media (max-width: 768px) {
+            #home h1 {
+                font-size: 2em;
+            }
+            #home p {
+                font-size: 1.2em;
+            }
+            .game-collage {
+                max-width: 90%;
+            }
+            .content h1 {
+                font-size: 2em;
+            }
+            .contact-info h2 {
+                font-size: 1.8em;
+            }
+            .game video {
+                max-width: 100%;
+            }
+            .menu-button {
+                font-size: 1.2em;
+                padding: 8px 12px;
+            }
+            .sidebar {
+                width: 100%;
+                left: -100%;
+            }
+            .sidebar.open {
+                left: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="menu-button" role="button" aria-label="Toggle navigation menu">☰ Menu</div>
+    <nav class="sidebar" role="navigation" aria-label="Main navigation">
+        <a href="#home" class="active" aria-current="page" data-section="home">Home</a>
+        <a href="#intro" data-section="intro">Intro</a>
+        <a href="#projects" data-section="projects">Projects</a>
+        <a href="#contact" data-section="contact">Contact</a>
+    </nav>
+    <main>
+        <section id="home" class="active">
+            <h1>Chinmay Ram</h1>
+            <p>Game Designer & level Designer</p>
+            <img src="assets\game_collage.png" alt="Collage of Chinmay Ram's horror game projects" class="game-collage">
+        </section>
+        <section id="intro">
+            <div class="content">
+                <h1>Chinmay Ram</h1>
+                <p>Hi! I’m Chinmay Ram — a solo game designer and level designer working in Unity 3D. I specialize in crafting immersive levels, configuring gameplay interactions using the Unity Inspector, and designing horror and experimental games. I work without writing code, using prefab logic, visual tools, and custom scripts to bring my ideas to life. My work draws inspiration from psychological horror, creating atmospheric, unsettling experiences that linger with players. Explore my projects to see my expertise in level design and horror game development.</p>
+            </div>
+        </section>
+        <section id="projects">
+            <div class="container">
+                <div class="game">
+                    <h2>The Pursuit of Happiness</h2>
+                    <p>Role: Game & Level Designer
+Engine: Unity 3D | Team Size: 4 | Status: Completed (Jam Project)
+
+Summary:
+A short horror-chase experience where players must escape a surreal maze while being hunted by a mysterious entity named Bala Krishna.
+
+My Contributions:
+
+Designed the full level layout, including walls, boundaries,etc.
+
+Used lighting and fog to create atmosphere and tension
+
+Collaborated with team on pacing, visual style, and game mechanics.</p>
+                    <video controls preload="metadata" aria-label="Gameplay trailer for The Pursuit of Happiness">
+                        <source src="assets\pursuit_of_happiness.mp4" type="video/mp4">
+                        <p>Sorry, the gameplay video for The Pursuit of Happiness is unavailable. Please check back later or contact me for details.</p>
+                    </video>
+                    <audio class="hover-sound" src="assets\hover1.mp3"></audio>
+                </div>
+                <div class="game">
+                    <h2>Housebound</h2>
+                    <p>Role: Solo Game & Level Designer
+Engine: Unity 3D | Status: Published on itch.io
+
+Summary:
+A psychological first-person horror experience where players explore a haunted house, uncover clues, and survive terrifying events. Built entirely solo using Unity and ChatGPT-assisted scripting.
+
+My Contributions:
+
+Designed the full level layout using modular prefabs, horror lighting, fog, and particles
+
+Used Unity's built-in systems and Inspector to configure environment and gameplay
+
+Implemented a complete first-person controller for player movement
+
+Used ChatGPT to generate and integrate all gameplay scripts (clue pickup, UI prompts, audio logic, cutscene transitions)
+
+Designed clue-based progression and visual feedback through TextMeshPro and UI
+
+Planned end sequence and gameplay flow without direct programming knowledge.</p>
+                    <video controls preload="metadata" aria-label="Gameplay trailer for Housebound">
+                        <source src="assets\housebound.mp4"" type="video/mp4">
+                        <p>Sorry, the gameplay video for Housebound is unavailable. Please check back later or contact me for details.</p>
+                    </video>
+                    <p><a href="https://arcadian-xp.itch.io/housebound" target="_blank">Play on itch.io</a></p>
+                    <audio class="hover-sound" src="assets\hover1.mp3"></audio>
+                </div>
+                <div class="game">
+                    <h2>Benny’s Burger Piz</h2>
+                    <p>Role: Solo Game & Level Designer
+Engine: Unity 3D | Status: In Development
+
+Summary:
+A survival horror game set during a late-night shift at a creepy roadside diner. The player must navigate eerie events and survive while being stalked by a mysterious entity.</p>
+                    <video controls preload="metadata" aria-label="Gameplay trailer for Benny’s Burger Piz">
+                        <source src="assets\bennys_burger_piz.mp4" type="video/mp4">
+                        <p>Sorry, the gameplay video for Benny’s Burger Piz is unavailable. Please check back later or contact me for details.</p>
+                    </video>
+                    <audio class="hover-sound" src="assets\hover1.mp3"></audio>
+                </div>
+                <div class="game">
+                    <h2>Around</h2>
+                    <p>Role: Solo Game Designer
+Engine: Unity 3D | Status: Experimental Project
+
+Summary:
+An abstract visual and audio experience built around movement, light, and surreal design. Players explore a stylized space where gameplay is driven by mood, color, and interaction.</p>
+                    <video controls preload="metadata" aria-label="Gameplay trailer for Around">
+                        <source src="assets\around.mp4" type="video/mp4">
+                        <p>Sorry, the gameplay video for Around is unavailable. Please check back later or contact me for details.</p>
+                    </video>
+                    <audio class="hover-sound" src="assets\hover1.mp3"></audio>
+                </div>
+                <div class="game">
+                    <h2>Ward 13</h2>
+                    <p>Role: Solo Game & Level Designer
+Engine: Unity 3D | Status: Concept Phase
+
+Summary:
+A psychological horror experience set in an abandoned hospital where players explore eerie hallways and uncover unsettling atmosphere-driven encounters. Focused on isolation, pacing, and mood.</p>
+                    <video controls preload="metadata" aria-label="Gameplay trailer for Ward 13">
+                        <source src="assets\ward 13.mp4" type="video/mp4">
+                        <p>Sorry, the gameplay video for Ward 13 is unavailable. Please check back later or contact me for details.</p>
+                    </video>
+                    <audio class="hover-sound" src="assets\hover1.mp3"></audio>
+                </div>
+            </div>
+        </section>
+        <section id="contact">
+            <div class="contact-info">
+                <h2>Contact</h2>
+                <p>Email: kodalichinmayram@gmail.com</p>
+        <p>LinkedIn: <a href="https://www.linkedin.com/in/kodali-chinmay-ram-659966370/?trk=opento_sprofile_topcard" target="_blank">LinkedIn Profile</a></p>
+                <p>Instagram: <a href="https://www.instagram.com/chinmay__xp/?locale=en_US&hl=en" target="_blank">Instagram Profile</a></p>
+            </div>
+        </section>
+    </main>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const menuButton = document.querySelector('.menu-button');
+            const sidebar = document.querySelector('.sidebar');
+            const navLinks = document.querySelectorAll('.sidebar a');
+            const sections = document.querySelectorAll('section');
+            const games = document.querySelectorAll('.game');
+            let audioEnabled = true;
+
+            // Show initial section based on URL hash or default to home
+            const showSection = () => {
+                const hash = window.location.hash || '#home';
+                const sectionId = hash.replace('#', '');
+                sections.forEach(section => {
+                    section.classList.toggle('active', section.id === sectionId);
+                });
+                navLinks.forEach(link => {
+                    link.classList.toggle('active', link.getAttribute('data-section') === sectionId);
+                    if (link.getAttribute('data-section') === sectionId) {
+                        document.title = `Chinmay Ram - ${link.textContent}`;
+                    }
+                });
+            };
+
+            // Menu toggle
+            menuButton.addEventListener('click', () => {
+                sidebar.classList.toggle('open');
+            });
+
+            // Navigation link handling
+            navLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    sidebar.classList.remove('open');
+                    navLinks.forEach(l => l.classList.remove('active'));
+                    link.classList.add('active');
+                    const sectionId = link.getAttribute('data-section');
+                    sections.forEach(section => {
+                        section.classList.toggle('active', section.id === sectionId);
+                    });
+                    window.location.hash = sectionId;
+                    document.title = `Chinmay Ram - ${link.textContent}`;
+                });
+            });
+
+            // Audio toggle button (only for projects section)
+            const projectsSection = document.getElementById('projects');
+            if (projectsSection) {
+                const toggleAudioButton = document.createElement('button');
+                toggleAudioButton.id = 'audio-toggle';
+                toggleAudioButton.textContent = 'Toggle Audio Off';
+                document.body.appendChild(toggleAudioButton);
+
+                toggleAudioButton.addEventListener('click', () => {
+                    audioEnabled = !audioEnabled;
+                    toggleAudioButton.textContent = audioEnabled ? 'Toggle Audio Off' : 'Toggle Audio On';
+                });
+
+                // Show/hide audio toggle based on active section
+                const updateAudioToggle = () => {
+                    toggleAudioButton.style.display = projectsSection.classList.contains('active') ? 'block' : 'none';
+                };
+
+                navLinks.forEach(link => {
+                    link.addEventListener('click', updateAudioToggle);
+                });
+                window.addEventListener('hashchange', updateAudioToggle);
+                updateAudioToggle();
+            }
+
+            // Hover audio for games
+            if (games.length > 0) {
+                games.forEach(game => {
+                    const audio = game.querySelector('.hover-sound');
+                    game.addEventListener('mouseenter', () => {
+                        if (audioEnabled && audio) {
+                            audio.volume = 0.3;
+                            audio.play().catch(error => console.error(`Audio play failed for ${audio.src}:`, error));
+                        }
+                    });
+                    game.addEventListener('mouseleave', () => {
+                        if (audio) {
+                            audio.pause();
+                            audio.currentTime = 0;
+                        }
+                    });
+                });
+            }
+
+            // Debug video loading
+            const videos = document.querySelectorAll('video source');
+            videos.forEach(video => {
+                const src = video.getAttribute('src');
+                const videoElement = video.parentElement;
+                videoElement.addEventListener('error', () => {
+                    console.error(`Failed to load video: ${src}`);
+                });
+                videoElement.addEventListener('loadeddata', () => {
+                    console.log(`Successfully loaded video: ${src}`);
+                });
+            });
+
+            // Initialize section visibility
+            showSection();
+            window.addEventListener('hashchange', showSection);
+        });
+    </script>
+</body>
+</html>
